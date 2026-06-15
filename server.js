@@ -17,7 +17,7 @@ socket.init(io)
 
 app.use(express.json())
 app.use("/",express.static("uploads"))
-app.use("/users",require("../sample_socialmedia_project/routes/userroutes"))
+app.use("/user",require("../sample_socialmedia_project/routes/userroutes"))
 app.use("/profile ",require("../sample_socialmedia_project/routes/profileroutes"))
 app.use("/uploads",express.static("uploads"))
 app.use("/friend",require("../sample_socialmedia_project/routes/profileroutes"))
