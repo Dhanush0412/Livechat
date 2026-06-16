@@ -5,6 +5,10 @@ let groupschema = mongoose.Schema({
         type:String,
         required:true
     },
+    groupimage:{
+      type:String,
+      default:"default-group.jpg"
+    },
     createdby:{
         type: mongoose.Schema.Types.ObjectId,
         ref:"Profile"

@@ -4,9 +4,10 @@ let router= express.Router();
 let {senddirectmessage,getdirectmessage,markmessagesread,unreadcount,getchatlist,chatpreview} = require("../controllers/directmessagecontroller")
 
 router.post("/",senddirectmessage)
-router.get("/:senderid/:receiverid",getdirectmessage)
-router.put("/read/:senderid/:receiverid",markmessagesread)
-router.get("/unread/:profileid",unreadcount)
-router.get("/chatlist/:profileid",getchatlist)
 router.get("/chatpreview/:profileid",chatpreview)
+router.get("/chatlist/:profileid",getchatlist)
+router.get("/unread/:profileid",unreadcount)
+router.put("/read/:senderid/:receiverid",markmessagesread)
+router.get("/:senderid/:receiverid",getdirectmessage)
+
 module.exports=router

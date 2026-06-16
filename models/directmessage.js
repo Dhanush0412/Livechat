@@ -16,9 +16,10 @@ let directmessageschema = mongoose.Schema({
         type:Boolean,
         default:false
     }
-},{
+},
+  {
     timestamps:true
-})
+  })
 
 let Directmessage = mongoose.model(
     "Directmessage",
