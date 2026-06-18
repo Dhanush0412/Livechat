@@ -118,8 +118,8 @@ let forgotpassword = async (req,res)=>{
             newpassword,10
         )
         userexist.password=hashedpassword
-        await userexist.save()
-        return res.send("password updated successfully")
+        await userexist.save();
+        return res.send("password updated successfully");
     } catch (error) {
        return res.send("internal error")   
     }

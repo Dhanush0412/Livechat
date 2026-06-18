@@ -6,7 +6,8 @@ let User = require("../models/user")
 // creating profile //
 let createprofile = async(req,res)=>{
    try{
-     let{bio,userid} = req.body
+    let {userid}= req.params
+     let{bio} = req.body
     let userexist = await User.findById(userid)
     if(!userexist){
         return res.status(401).send("user not exist")
