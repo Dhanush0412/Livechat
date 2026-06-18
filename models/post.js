@@ -11,7 +11,11 @@ let postSchema = mongoose.Schema({
     profile:{
       type: mongoose.Schema.Types.ObjectId,
       ref: "Profile"
-    }
+    },
+    likes:[{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"Profile"
+    }]
 },{
     timestamps:true
 })

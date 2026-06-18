@@ -67,7 +67,8 @@ app.use("/post",require("./routes/postroutes"));
 app.use("/group",require("./routes/grouproutes"));
 app.use("/message",require("./routes/messageroutes"));
 app.use("/dmessage",require("./routes/directmessageroutes"));
- 
+app.use("/connection",require("./routes/connectionrequestroutes"))
+app.use("mainlist",require("./routes/chatroutes"))
  
 // Socket Connection
  

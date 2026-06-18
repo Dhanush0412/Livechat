@@ -6,7 +6,8 @@ let Profile = require("../models/profile")
 
 let createpost = async(req,res)=>{
     try {
-        let {caption,profileid}=req.body
+        let {profileid} = req.params
+        let {caption}=req.body
 
         let profile = await Profile.findById(profileid)
         if(!profile){
@@ -59,5 +60,59 @@ let getfeed = async(req,res)=>{
     return res.send("internal error")
 }
 }
+// post likes //
 
-module.exports= {createpost,getfeed}
+let likes = async(req,res)=>{
+    try {
+        let {postid,profileid} = req.params
+
+        let profile = await Profile.findById(profileid)
+        if(!profile){
+            return res.send("profile not found")
+        }
+        if(post.likes.includes(profileid)){
+            return res.send("already liked")
+        }
+        post.likes.push(profileid)
+        await post.save();
+        return res.json({
+            message:"liked",
+            totallikes:post.likes.length
+    })
+
+    } catch (error) {
+        console.log(error)
+        return res.send("internal error")
+    }
+}
+
+// unlike post //
+
+let unlike = async(req,res)=>{
+    try {
+        let {postid,profileid} = req.params
+        let profile = await Profile.findById(profileid)
+        if(!profile){
+            return res.send("profile not found")
+        }
+        let post = await Post.findById(postid)
+        if(!post){
+            return res.send("post not found")
+        }
+        post.likes = post.likes.filter(
+            like=> like.toString() !== profileid
+        )
+        await post.save();
+        return res.json({
+            message:"unlike",
+            totallikes:post.likes.length
+        })
+        
+    } catch (error) {
+        console.log(error)
+        return res.send("internal error")
+    }
+}
+
+
+module.exports= {createpost,getfeed,likes,unlike}

@@ -8,6 +8,6 @@ router.get("/chatpreview/:profileid",chatpreview)
 router.get("/chatlist/:profileid",getchatlist)
 router.get("/unread/:profileid",unreadcount)
 router.put("/read/:senderid/:receiverid",markmessagesread)
-router.get("/:senderid/:receiverid",getdirectmessage)
+router.get("/getting/:senderid/:receiverid",getdirectmessage)
 
 module.exports=router

@@ -97,4 +97,5 @@ profile.profilepic =req.file.filename;
     }
 }
 
+
 module.exports={createprofile,getdashboard,updatedprofilepic};
