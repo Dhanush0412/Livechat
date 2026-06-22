@@ -1,7 +1,5 @@
 let mongoose = require("mongoose")
-const Connectionrequest = require("./connectionrequest")
-const { acceptrequest } = require("../controllers/connectionrequestcontroller")
-const Groupinvite = require("./groupinvite")
+
 
 let notificationschema = mongoose.Schema({
     receiverid:{
@@ -18,7 +16,7 @@ let notificationschema = mongoose.Schema({
         type:String,
         enum:[
             "connectionrequest",
-            "acceptrequest",
+            "connectionaccepted",
             "groupinvite",
             "like"
         ],

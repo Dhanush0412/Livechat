@@ -1,6 +1,7 @@
 
 let Connectionrequest = require("../models/connectionrequest")
 let Profile = require("../models/profile")
+let Notification = require("../models/notification")
 
 // send request //
 
@@ -34,6 +35,13 @@ let sendrequest = async (req,res)=>{
             receiver:receiverid
         })
         await request.save();
+        await Notification.create({
+         receiverid:receiverid,
+         senderid:senderid,
+         type:"connectionrequest",
+         message:"sent you a connection request"
+
+          });
         return res.send("request sent")
 
     } catch (error) {
@@ -70,6 +78,13 @@ let acceptrequest = async(req,res)=>{
         }
         request.status="accepted"
         await request.save();
+        await Notification.create({
+
+         receiverid:request.sender,
+         senderid:request.receiver,
+         type:"connectionaccepted",
+         message:"accepted your connection request"
+         });
 
         let senderprofile = await Profile.findById(request.sender)
         let receiverprofile = await Profile.findById(request.receiver)

@@ -1,7 +1,7 @@
 let Post = require("../models/post")
 let Profile = require("../models/profile")
 let User = require("../models/user")
-
+let Notification = require("../models/notification")
 // post creation //
 
 let createpost = async(req,res)=>{
@@ -79,6 +79,16 @@ let likes = async(req,res)=>{
         }
         post.likes.push(profileid)
         await post.save();
+        
+        if(post.profile.toString()!==profileid)
+         {
+            await Notification.create({
+            receiverid:post.profile,
+            senderid:profileid,
+            type:"like",
+            message:"liked your post"
+            });
+         }
         return res.json({
             message:"liked",
             totallikes:post.likes.length

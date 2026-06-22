@@ -69,7 +69,7 @@ app.use("/message",require("./routes/messageroutes"));
 app.use("/dmessage",require("./routes/directmessageroutes"));
 app.use("/connection",require("./routes/connectionrequestroutes"))
 app.use("/mainlist",require("./routes/chatroutes"))
- 
+app.use("/notification",require("./routes/notificationroutes"))
 // Socket Connection
  
 io.on(

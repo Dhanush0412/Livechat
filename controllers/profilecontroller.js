@@ -1,7 +1,7 @@
 
 let Profile = require("../models/profile")
 let User = require("../models/user")
-
+let Post = require("../models/post")
 
 // creating profile //
 let createprofile = async(req,res)=>{
@@ -53,14 +53,15 @@ let getdashboard = async(req,res)=>{
     if(!profile){
         return res.status(401).send("profile not exist")
     }
-    
+    let totalposts = await Post.countDocuments({profile:profileid});  
     return res.json({
         profileid : profile._id,
         username : profile.user.username,
         bio:profile.bio,
         profilepic : profile.profilepic,
         groups : profile.groups.length,
-        connections:profile.connections.length
+        connections:profile.connections.length,
+        posts:totalposts
     })
    
    } catch (error) {

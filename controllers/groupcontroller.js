@@ -2,6 +2,7 @@ let Group = require("../models/group")
 let Profile = require("../models/profile")
 let Groupinvite=require("../models/groupinvite")
 let Message = require("../models/message")
+let Notification = require("../models/notification")
 let creategroup = async(req,res)=>{
     try {
         let {groupname,profileid}=req.body
@@ -79,7 +80,13 @@ let sendgroupinvite =async(req,res)=>{
 
         });
         await invite.save();
+        await Notification.create({
 
+         receiverid:receiverid,
+         senderid:senderid,
+         type:"groupinvite",
+         message:"invited you to a group"
+        });
         return res.send("invite sent");
 
     }
