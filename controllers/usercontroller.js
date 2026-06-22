@@ -1,7 +1,8 @@
 let User = require("../models/user")
 let Profile = require("../models/profile")
 let bcrypt = require("bcrypt")
-
+let Otp = require("../models/otp")
+let transporter = require("../config/mail")
 // signup //
 
 let signup = async(req,res)=>{
@@ -37,16 +38,30 @@ let signup = async(req,res)=>{
         password,
         10
     )
+    let otpverified =await Otp.findOne({
+      email:email,
+      verified:true
+        });
+
+   if(!otpverified){
+
+    return res.send("verify email first");
+    }
     let user = new User({
         username:username,
         email:email,
         phone:phone,
         password:hashedpassword
-    })
+     })
+     
      await user.save()
-     return res.send("signed up successfully")
-    
-  } catch (error) {
+     await Otp.deleteMany({
+     email:email
+     });
+
+   return res.send("signed up successfully");
+
+    } catch (error) {
     return res.send("internal error")
   }
     
@@ -124,5 +139,67 @@ let forgotpassword = async (req,res)=>{
        return res.send("internal error")   
     }
 }
+// sending OTP //
 
-module.exports = {signup,login,forgotpassword};
+let sendotp = async(req,res)=>{
+    try {
+        let {email} = req.body
+        let existingotp = await Otp.findOne({
+            email:email,
+            expiresAt:{
+                $gt:new Date()
+            }
+        })
+
+        if(existingotp){
+            return res.send( "OTP already sent. Wait 5 minutes.")
+        }
+
+        let otp = Math.floor(100000+Math.random()*900000)
+        await transporter.sendMail({
+            from:process.env.EMAIL,
+            to:email,
+            subject:"PandaChat Email Verification OTP",
+            text:`Welcome to PandaChat Your Email Verification OTP is: ${otp} This OTP is valid for 5 minutes. Do not share this OTP with anyone. Team PandaChat`
+
+        })
+        await Otp.create({ email,otp,verified:false,expiresAt:new Date(Date.now() + 5*60*1000)
+
+});
+        return res.send("OTP sent successfully");
+
+    } catch (error) {
+        console.log(error)
+        return res.send("internal error");
+    }
+}
+
+let verifyotp = async(req,res)=>{
+    try {
+        let {email,otp} = req.body
+        let otpdata = await Otp.findOne({
+            email:email
+        })
+        .sort({
+            createdAt:-1
+        })
+        if(!otpdata){
+            return res.send("otp not found")
+        }
+        if(otpdata.expiresAt<new Date()){
+            return res.send("OTP is expired")
+        }
+        if(otpdata.otp !== otp){
+            return res.send("invalid otp")
+        }
+        otpdata.verified=true;
+        await otpdata.save();
+        return res.send("email verified");
+
+    } catch (error) {
+        console.log(error)
+        return res.send("internal error")
+    }
+}
+
+module.exports = {signup,login,forgotpassword,sendotp,verifyotp};

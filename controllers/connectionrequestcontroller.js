@@ -11,6 +11,7 @@ let sendrequest = async (req,res)=>{
         if(senderid == receiverid){
             return res.send("cannot send request to yourself")
         }
+
         let requestexist = await Connectionrequest.findOne({
 
     $or:[
