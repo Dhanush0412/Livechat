@@ -189,7 +189,7 @@ let verifyotp = async(req,res)=>{
         if(otpdata.expiresAt<new Date()){
             return res.send("OTP is expired")
         }
-        if(otpdata.otp !== otp){
+        if(String(otpdata.otp) !== String(otp)){
             return res.send("invalid otp")
         }
         otpdata.verified=true;
@@ -202,4 +202,22 @@ let verifyotp = async(req,res)=>{
     }
 }
 
-module.exports = {signup,login,forgotpassword,sendotp,verifyotp};
+let searchuser = async(req,res)=>{
+    try {
+        let {username} = req.query;
+        let profile = await Profile.find()
+        .populate("user");
+        let result = profile.filter(profile=>
+        profile.user.username
+        .toLowerCase().includes(username.toLowerCase())
+        );
+        return res.json(result);
+    } 
+    catch (error) {
+        console.log(error)
+        return res.send("internal error")
+    }
+}
+
+
+module.exports = {signup,login,forgotpassword,sendotp,verifyotp,searchuser};

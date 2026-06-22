@@ -98,4 +98,57 @@ profile.profilepic =req.file.filename;
 }
 
 
-module.exports={createprofile,getdashboard,updatedprofilepic};
+// bio update for setting //
+
+let bioupdate = async(req,res)=>{
+    try {
+        let {profileid} = req.params
+        let {bio} = req.body
+        
+        let profile = await Profile.findById(profileid)
+        if(!profile){
+            return res.send("profile is not found")
+        }
+        if(bio == ""){
+            return res.send("bio required");
+        }
+        profile.bio=bio;
+        await profile.save()
+        return res.json({
+            message:"bio updated",
+            bio:profile.bio
+        });
+    } catch (error) {
+       console.log(error)
+       return res.send("internal error") 
+    }
+}
+
+let profileedit = async(req,res)=>{
+    try {
+        let {profileid} = req.params
+        let {bio} = req.body
+        
+        let profile = await Profile.findById(profileid)
+        if(!profile){
+            return res.send("profile not found")
+        }
+        if(bio){
+            profile.bio=bio
+        }
+        if(req.file){
+            profile.profilepic=req.file.filename;
+        }
+        await profile.save();
+        return res.json({
+            message:"profile edited",
+            bio:profile.bio,
+            profilepic:profile.profilepic
+        })
+    } catch (error) {
+       console.log(error)
+       return res.send("internal error")   
+    }
+}
+
+module.exports={createprofile,getdashboard,updatedprofilepic,bioupdate,profileedit};
