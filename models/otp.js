@@ -17,6 +17,8 @@ let Otpschema = mongoose.Schema({
         type:Date,
         required:true
     }
+},{
+     timestamps:true
 })
 
 let Otp = mongoose.model(
