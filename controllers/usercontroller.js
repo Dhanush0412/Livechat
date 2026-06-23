@@ -2,6 +2,7 @@ let User = require("../models/user")
 let Profile = require("../models/profile")
 let bcrypt = require("bcrypt")
 let Otp = require("../models/otp")
+let jwt = require("jsonwebtoken")
 let {transporter,sendloginmail} = require("../config/mail")
 
 // signup //
@@ -92,12 +93,22 @@ let login = async(req,res)=>{
         return res.status(401).send("invalid password")
     }
     let profile =await Profile.findOne({user:userexist._id});
+    
+    let token = jwt.sign(
+        {
+            userid:userexist._id
+        },
+        process.env.JWT_SECRET,
+        {
+           expiresIn:"7d" 
+        }
+    )
 
     sendloginmail(userexist.email,userexist.username)
 
     return res.json({
-      message:"loggedin successfully",
-
+    message:"loggedin successfully",
+    token,
     userid:
     userexist._id,
     username:userexist.username,

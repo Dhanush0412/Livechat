@@ -1,13 +1,13 @@
 let express = require("express")
 let router= express.Router();
-
+let verifytoken=require("../middelware/auth")
 let {senddirectmessage,getdirectmessage,markmessagesread,unreadcount,getchatlist,chatpreview} = require("../controllers/directmessagecontroller")
 
-router.post("/sending",senddirectmessage)
-router.get("/chatpreview/:profileid",chatpreview)
-router.get("/chatlist/:profileid",getchatlist)
-router.get("/unread/:profileid",unreadcount)
-router.put("/read/:senderid/:receiverid",markmessagesread)
-router.get("/getting/:senderid/:receiverid",getdirectmessage)
+router.post("/sending",verifytoken,senddirectmessage)
+router.get("/chatpreview",verifytoken,chatpreview)
+router.get("/chatlist",verifytoken,getchatlist)
+router.get("/unread",verifytoken,unreadcount)
+router.put("/read/:receiverid",verifytoken,markmessagesread)
+router.get("/getting/:receiverid",verifytoken,getdirectmessage)
 
 module.exports=router

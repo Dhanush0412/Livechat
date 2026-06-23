@@ -7,7 +7,7 @@ let Notification = require("../models/notification")
 
 let sendrequest = async (req,res)=>{
     try {
-        let {senderid} = req.params;
+        let senderid = req.profileid;
         let {receiverid}= req.body;
         if(senderid == receiverid){
             return res.send("cannot send request to yourself")
@@ -54,7 +54,7 @@ let sendrequest = async (req,res)=>{
 
 let pendingrequest = async(req,res)=>{
     try {
-        let {profileid} = req.params;
+        let profileid = req.profileid;
         let requests = await Connectionrequest.find({
             receiver:profileid,
             status:"pending"
@@ -71,11 +71,14 @@ let pendingrequest = async(req,res)=>{
 
 let acceptrequest = async(req,res)=>{
     try {
-        let {requestid} = req.params;
+        let requestid = req.params;
         let request = await Connectionrequest.findById(requestid)
         if(!request){
             return res.send("request not found")
         }
+         if(String(request.receiver)!== String(req.profileid)){
+           return res.send("unauthorized");
+         }
         request.status="accepted"
         await request.save();
         await Notification.create({
@@ -103,11 +106,14 @@ let acceptrequest = async(req,res)=>{
 // reject request //
  let rejectrequest = async(req,res)=>{
     try {
-        let {requestid} = req.params
+        let requestid = req.params
          let request = await Connectionrequest.findById(requestid)
         if(!request){
             return res.send("request not found")
         }
+         if(String(request.receiver)!== String(req.profileid)){
+           return res.send("unauthorized");
+         }
         request.status="rejected"
         await request.save();
         return res.send("request rejected")
@@ -119,7 +125,7 @@ let acceptrequest = async(req,res)=>{
  // get connections //
  let getconnections = async (req,res)=>{
     try {
-        let {profileid} = req.params;
+        let profileid = req.profileid;
         let profile = await Profile.findById(profileid)
         .populate({
             path:"connections",

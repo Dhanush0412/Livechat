@@ -81,7 +81,6 @@ io.on(
             }
         );
  
- 
         socket.on("joinprofile",(profileid)=>{
          try {
             socket.join(profileid);

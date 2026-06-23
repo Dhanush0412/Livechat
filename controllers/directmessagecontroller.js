@@ -5,7 +5,8 @@ let socket = require("../socket/socket")
 // sending direct message //
 let senddirectmessage = async(req,res)=>{
    try {
-       let {text,senderid,receiverid} = req.body
+       let senderid = req.profileid
+       let {text,receiverid} = req.body
     let message= new Directmessage({
         text:text,
         sender:senderid,
@@ -18,13 +19,12 @@ let senddirectmessage = async(req,res)=>{
     
     socket.getIO()
 
-.to(receiverid)
+   .to(receiverid)
 
-.emit(
+    .emit(
     "receiveDirectMessage",
     populatedmessage
-);
-
+     );
     return res.json(populatedmessage)
    } catch (error) {
       console.log(error)
@@ -35,7 +35,8 @@ let senddirectmessage = async(req,res)=>{
 // gettin direct message//
 let getdirectmessage = async(req,res)=>{
    try {
-     let {senderid,receiverid} = req.params
+    let senderid = req.profileid
+     let {receiverid} = req.params
     let message = await Directmessage.find({
         $or:[
             {
@@ -63,14 +64,12 @@ let getdirectmessage = async(req,res)=>{
 // mark the readed message //
 let markmessagesread = async(req,res)=>{
     try{
-        let {
-            senderid,
-            receiverid
-        } = req.params;
+        let profileid = req.profileid
+        let {receiverid} = req.params;
         await Directmessage.updateMany(
         {
-            sender:senderid,
-            receiver:receiverid,
+            sender:receiverid,
+            receiver:profileid,
             isRead:false
         },
         {
@@ -88,8 +87,7 @@ let markmessagesread = async(req,res)=>{
 let unreadcount =async(req,res)=>{
 
     try{
-
-        let { profileid } =req.params;
+        let  profileid  =req.profileid;
         let result =await Directmessage.aggregate([
         {
 
@@ -122,7 +120,7 @@ let unreadcount =async(req,res)=>{
 // getting chat list  method//
 let getchatlist =async(req,res)=>{
 try{
-let { profileid } =req.params;
+let  profileid  =req.profileid;
 let chats =await Directmessage.aggregate([
 {
     $match:{
@@ -187,7 +185,7 @@ catch(error){
 
 let chatpreview = async(req,res)=>{
 try{
-let { profileid } = req.params;
+let  profileid  = req.profileid;
 
 let result = await Directmessage.aggregate([
 {

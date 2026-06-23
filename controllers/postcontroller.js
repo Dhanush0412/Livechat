@@ -6,7 +6,7 @@ let Notification = require("../models/notification")
 
 let createpost = async(req,res)=>{
     try {
-        let {profileid} = req.params
+        let profileid = req.profileid
         let {caption}=req.body
         let profile = await Profile.findById(profileid)
         if(!profile){
@@ -30,7 +30,7 @@ let createpost = async(req,res)=>{
 // post getting to the connected user //
 let getfeed = async(req,res)=>{
     try {
-    let {profileid} = req.params
+    let profileid = req.profileid
     let profile = await Profile.findById(profileid)
         if(!profile){
             return res.send("profile not found")
@@ -63,7 +63,8 @@ let getfeed = async(req,res)=>{
 
 let likes = async(req,res)=>{
     try {
-        let {postid,profileid} = req.params
+        let profileid=req.profileid
+        let {postid} = req.params
 
         let profile = await Profile.findById(profileid)
         if(!profile){
@@ -103,7 +104,8 @@ let likes = async(req,res)=>{
 
 let unlike = async(req,res)=>{
     try {
-        let {postid,profileid} = req.params
+        let profileid=req.profileid
+        let {postid} = req.params
         let profile = await Profile.findById(profileid)
         if(!profile){
             return res.send("profile not found")
@@ -174,7 +176,7 @@ let getpost = async(req,res)=>{
    let getmyposts = async(req,res)=>{
 
     try{
-        let { profileid } = req.params;
+        let  profileid  = req.profileid
         let profile = await Profile.findById(profileid);
         if(!profile){
             return res.send("profile not found");

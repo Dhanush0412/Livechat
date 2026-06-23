@@ -3,7 +3,7 @@ let Notification = require("../models/notification")
 // get notification method //
 let getnotifications = async(req,res)=>{
       try{
-        let { profileid } = req.params;
+        let  profileid  = req.profileid;
         let notifications =await Notification.find({receiverid:profileid})
         .populate("senderid")
         .sort({
@@ -29,6 +29,9 @@ let markasread = async(req,res)=>{
         if(!notification){
             return res.send("notification not found");
         }
+        if(String(notification.receiver)!== String(req.profileid)){
+           return res.send("unauthorized");
+         }
         notification.read = true;
         await notification.save();
         return res.json({

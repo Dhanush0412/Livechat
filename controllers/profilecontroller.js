@@ -6,7 +6,7 @@ let Post = require("../models/post")
 // creating profile //
 let createprofile = async(req,res)=>{
    try{
-    let {userid}= req.params
+    let userid= req.userid
      let{bio} = req.body
     let userexist = await User.findById(userid)
     if(!userexist){
@@ -46,7 +46,7 @@ let createprofile = async(req,res)=>{
 // Getting dashboard //
 let getdashboard = async(req,res)=>{
    try {
-       let {profileid} = req.params;
+       let profileid = req.profileid;
     let profile = await Profile.findById(profileid)
 
     .populate("user")
@@ -76,7 +76,7 @@ let getdashboard = async(req,res)=>{
 
 let updatedprofilepic = async(req,res)=>{
     try {
-        let {profileid} = req.params
+        let profileid = req.profileid
         let profile = await Profile.findById(profileid)
         if(!profile){
             return res.send("profile not exist")
@@ -103,9 +103,8 @@ let updatedprofilepic = async(req,res)=>{
 
 let bioupdate = async(req,res)=>{
     try {
-        let {profileid} = req.params
+        let profileid = req.profileid
         let {bio} = req.body
-        
         let profile = await Profile.findById(profileid)
         if(!profile){
             return res.send("profile is not found")
@@ -129,7 +128,7 @@ let bioupdate = async(req,res)=>{
 
 let profileedit = async(req,res)=>{
     try {
-        let {profileid} = req.params
+        let profileid = req.profileid
         let {bio} = req.body
         
         let profile = await Profile.findById(profileid)

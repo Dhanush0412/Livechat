@@ -7,7 +7,8 @@ let Notification = require("../models/notification")
 // group creation method  //
 let creategroup = async(req,res)=>{
     try {
-        let {groupname,profileid}=req.body
+        let profileid=req.profileid
+        let {groupname}=req.body
         let profile = await Profile.findById(profileid)
         if(!profile){
             return res.send("profile not found")
@@ -30,8 +31,8 @@ let creategroup = async(req,res)=>{
  // sending group invite to someone //
 let sendgroupinvite =async(req,res)=>{
       try{
-
-        let {groupid,senderid,receiverid} = req.body;
+        let senderid= req.profileid
+        let {groupid,receiverid} = req.body;
 
         let group =await Group.findById(groupid);
 
@@ -89,7 +90,7 @@ let sendgroupinvite =async(req,res)=>{
 // get the pending request //
    let getpendinginvites =async(req,res)=>{
     try{
-        let { profileid } = req.params;
+        let profileid  = req.profileid;
         let invites = await Groupinvite.find({
             receiver:profileid,
             status:"pending"
@@ -108,7 +109,7 @@ let sendgroupinvite =async(req,res)=>{
  // accept the group invites //
  let acceptinvite =async(req,res)=>{
     try{
-        let { inviteid } =req.params;
+        let  {inviteid } =req.params;
         let invite =await Groupinvite.findById(inviteid);
         if(!invite){
             return res.send("invite not found");
@@ -120,6 +121,9 @@ let sendgroupinvite =async(req,res)=>{
         await invite.save();
         let group =await Group.findById(invite.group);
         let profile =await Profile.findById(invite.receiver);
+         if(String(invite.receiver)!== String(req.profileid)){
+           return res.send("unauthorized");
+         }
         if(!group.members.includes(invite.receiver)){
             group.members.push(invite.receiver);
         }
@@ -148,6 +152,9 @@ let rejectinvite = async(req,res)=>{
         if(invite.status!=="pending"){
             return res.send("invite already processed");
         }
+        if(String(invite.receiver)!== String(req.profileid)){
+           return res.send("unauthorized");
+         }
         invite.status="rejected"
         await invite.save();
         return res.send("invite rejected")
@@ -161,7 +168,7 @@ let rejectinvite = async(req,res)=>{
 let getmygroup= async (req,res)=>{
     try {
 
-        let {profileid} = req.params
+        let profileid = req.profileid
         let profile = await Profile.findById(profileid)
         .populate("groups")
         if(!profile){
@@ -178,11 +185,8 @@ let getmygroup= async (req,res)=>{
 // groupchatpreview //
 let groupchatpreview = async(req,res)=>{
     try{
-        let { profileid } = req.params;
-        let profile =
-        await Profile.findById(
-            profileid
-        );
+        let profileid  = req.profileid;
+        let profile =await Profile.findById(profileid);
         if(!profile){
             return res.send("profile not found");
         }
@@ -280,4 +284,4 @@ let getgroupdetails = async(req,res)=>{
 
 }
 
-module.exports={creategroup,sendgroupinvite,getpendinginvites,acceptinvite,rejectinvite,getmygroup,groupchatpreview,getgroupdetails};
+module.exports={creategroup,sendgroupinvite,getpendinginvites,acceptinvite,rejectinvite,getmygroup,getgroupdetails};
