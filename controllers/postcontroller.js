@@ -54,10 +54,10 @@ let getfeed = async(req,res)=>{
             }
         )
       return res.json(posts);
-} catch (error) {
+    } catch (error) {
     console.log(error)
     return res.send("internal error")
-}
+  }
 }
 // post likes //
 
@@ -170,7 +170,7 @@ let getpost = async(req,res)=>{
         return res.send("internal error")
     }
 }
-
+ // getting my post //
    let getmyposts = async(req,res)=>{
 
     try{

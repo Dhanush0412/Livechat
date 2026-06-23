@@ -55,7 +55,6 @@ app.use("/uploads",express.static("uploads"));
  
 app.use("/user",require("./routes/userroutes"));
 app.use("/profile",require("./routes/profileroutes"));
-app.use("/friend",require("./routes/profileroutes"));
 app.use("/post",require("./routes/postroutes"));
 app.use("/group",require("./routes/grouproutes"));
 app.use("/message",require("./routes/messageroutes"));

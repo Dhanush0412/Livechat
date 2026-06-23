@@ -1,5 +1,7 @@
 let multer = require("multer");
 
+
+// storage its used for storing the file //
 let storage = multer.diskStorage(
     {
         destination:(req,file,cb)=>{

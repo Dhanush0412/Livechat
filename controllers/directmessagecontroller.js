@@ -1,6 +1,8 @@
 const { default: mongoose } = require("mongoose")
 let Directmessage=require("../models/directmessage")
 let socket = require("../socket/socket")
+
+// sending direct message //
 let senddirectmessage = async(req,res)=>{
    try {
        let {text,senderid,receiverid} = req.body
@@ -30,7 +32,7 @@ let senddirectmessage = async(req,res)=>{
    }
 }
 
-
+// gettin direct message//
 let getdirectmessage = async(req,res)=>{
    try {
      let {senderid,receiverid} = req.params
@@ -58,73 +60,43 @@ let getdirectmessage = async(req,res)=>{
     return res.send("internal error")
    }
 }
+// mark the readed message //
 let markmessagesread = async(req,res)=>{
-
     try{
-
         let {
             senderid,
             receiverid
         } = req.params;
-
         await Directmessage.updateMany(
-
         {
-
             sender:senderid,
-
             receiver:receiverid,
-
             isRead:false
-
         },
-
         {
-
             isRead:true
-
-        }
-
-        );
-
-        return res.send(
-            "messages marked as read"
-        );
-
+        });
+        return res.send("messages marked as read");
     }
-
     catch(error){
-
         console.log(error);
-
-        return res.send(
-            "internal error"
-        );
-
+        return res.send("internal error");
     }
 
 }
+// unread count method //
 let unreadcount =async(req,res)=>{
 
     try{
 
-        let { profileid } =
-        req.params;
-
-        let result =
-        await Directmessage.aggregate([
-
+        let { profileid } =req.params;
+        let result =await Directmessage.aggregate([
         {
 
             $match:{
 
-                receiver:
-                new mongoose.Types.ObjectId(
-                    profileid
-                ),
-
+                receiver:new mongoose.Types.ObjectId(profileid),
                 isRead:false
-
             }
 
         },
@@ -132,60 +104,37 @@ let unreadcount =async(req,res)=>{
         {
 
             $group:{
-
                 _id:"$sender",
-
                 unreadCount:{
                     $sum:1
                 }
-
             }
-
         }
-
         ]);
-
-        return res.json(
-            result
-        );
-
+        return res.json(result);
     }
-
     catch(error){
-
         console.log(error);
-
         return res.send( "internal error");
-
     }
-
 }
 
+// getting chat list  method//
 let getchatlist =async(req,res)=>{
-
 try{
-
 let { profileid } =req.params;
-
 let chats =await Directmessage.aggregate([
-
 {
     $match:{
 
         $or:[
-
         {
-            sender:
-            new mongoose.Types.ObjectId(profileid)
+            sender:new mongoose.Types.ObjectId(profileid)
         },
-
         {
-            receiver:
-            new mongoose.Types.ObjectId(profileid)
+            receiver:new mongoose.Types.ObjectId(profileid)
         }
-
         ]
-
     }
 },
 
@@ -197,90 +146,61 @@ let chats =await Directmessage.aggregate([
 
 {
     $group:{
-
         _id:{
-
             $cond:[
-
                 {
                     $eq:[
-                        "$sender",
-                        new mongoose.Types.ObjectId(
-                            profileid
-                        )
-                    ]
+                        "$sender",new mongoose.Types.ObjectId(profileid)
+                       ]
                 },
-
                 "$receiver",
-
                 "$sender"
-
             ]
-
         },
-
         latestMessage:{
             $first:"$text"
         },
-
         latestTime:{
             $first:"$createdAt"
         }
-
     }
 },
 
-{
+   {
     $sort:{
         latestTime:-1
     }
-}
+   }
 
-]);
+  ]);
 
-return res.json(chats);
+   return res.json(chats);
 
 }
 catch(error){
-
-console.log(error);
-
-return res.send(
-    "internal error"
-);
-
+   console.log(error);
+   return res.send("internal error");
+}
 }
 
-}
+// chatpreview method //
 
 let chatpreview = async(req,res)=>{
-
 try{
-
 let { profileid } = req.params;
 
-let result =
-await Directmessage.aggregate([
-
+let result = await Directmessage.aggregate([
 {
     $match:{
 
         $or:[
 
             {
-                sender:
-                new mongoose.Types.ObjectId(
-                    profileid
-                )
+                sender:new mongoose.Types.ObjectId(profileid)
             },
-
             {
-                receiver:
-                new mongoose.Types.ObjectId(
-                    profileid
-                )
+                receiver:new mongoose.Types.ObjectId(profileid)
             }
-
         ]
 
     }
@@ -294,24 +214,15 @@ await Directmessage.aggregate([
 
 {
     $group:{
-
         _id:{
-
             $cond:[
-
                 {
                     $eq:[
-                        "$sender",
-                        new mongoose.Types.ObjectId(
-                            profileid
-                        )
+                        "$sender",new mongoose.Types.ObjectId(profileid)
                     ]
                 },
-
                 "$receiver",
-
                 "$sender"
-
             ]
 
         },
@@ -330,17 +241,11 @@ await Directmessage.aggregate([
 
 {
     $lookup:{
-
         from:"profiles",
-
         localField:"_id",
-
         foreignField:"_id",
-
         as:"friend"
-
     }
-
 },
 
 {
@@ -349,17 +254,11 @@ await Directmessage.aggregate([
 
 {
     $project:{
-
         friendid:"$friend._id",
-
         profilepic:"$friend.profilepic",
-
         latestMessage:1,
-
         latestTime:1
-
     }
-
 },
 
 {
@@ -369,15 +268,13 @@ await Directmessage.aggregate([
 }
 
 ]);
-
 return res.json(result);
-
 }
 catch(error){
 
-console.log(error);
+  console.log(error);
 
-return res.send("internal error");
+  return res.send("internal error");
 
 }
 

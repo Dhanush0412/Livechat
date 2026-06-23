@@ -3,6 +3,8 @@ let Profile = require("../models/profile")
 let Groupinvite=require("../models/groupinvite")
 let Message = require("../models/message")
 let Notification = require("../models/notification")
+
+// group creation method  //
 let creategroup = async(req,res)=>{
     try {
         let {groupname,profileid}=req.body
@@ -25,6 +27,7 @@ let creategroup = async(req,res)=>{
     }
 }
 
+ // sending group invite to someone //
 let sendgroupinvite =async(req,res)=>{
       try{
 
@@ -49,39 +52,24 @@ let sendgroupinvite =async(req,res)=>{
 
         if(!sender.connections.includes(receiverid))
             {
-
             return res.send("user not connected");
-
         }
 
         let existingInvite =await Groupinvite.findOne({
-
             group:groupid,
-
             receiver:receiverid,
-
             status:"pending"
-
         });
-
         if(existingInvite){
-
             return res.send("invite already sent");
-
         }
-
         let invite =new Groupinvite({
-
             group:groupid,
-
             sender:senderid,
-
             receiver:receiverid
-
         });
         await invite.save();
         await Notification.create({
-
          receiverid:receiverid,
          senderid:senderid,
          type:"groupinvite",
@@ -92,131 +80,84 @@ let sendgroupinvite =async(req,res)=>{
     }
 
     catch(error){
-
         console.log(error);
-
         return res.send("internal error");
-
     }
 
 }
+  
+// get the pending request //
    let getpendinginvites =async(req,res)=>{
-
     try{
-
         let { profileid } = req.params;
-
         let invites = await Groupinvite.find({
-
             receiver:profileid,
-
             status:"pending"
-
         })
-
         .populate("group")
-
         .populate("sender");
-
         return res.json(invites);
-
     }
-
     catch(error){
-
         console.log(error);
-
         return res.send("internal error");
-
     }
 
 }
 
+ // accept the group invites //
  let acceptinvite =async(req,res)=>{
-
     try{
-
         let { inviteid } =req.params;
-
         let invite =await Groupinvite.findById(inviteid);
-
         if(!invite){
-
             return res.send("invite not found");
         }
-
         if(invite.status!=="pending"){
-
             return res.send("invite already processed");
-
         }
-
         invite.status ="accepted";
-
         await invite.save();
-
         let group =await Group.findById(invite.group);
-
         let profile =await Profile.findById(invite.receiver);
-
         if(!group.members.includes(invite.receiver)){
-
             group.members.push(invite.receiver);
-
         }
-
         if(!profile.groups.includes(invite.group)){
-
             profile.groups.push(invite.group);
-
         }
-
         await group.save();
-
         await profile.save();
-
         return res.send("invite accepted");
-
     }
-
     catch(error){
-
         console.log(error);
-
         return res.send("internal error");
-
     }
 
 }
 
+// reject group invite //
 let rejectinvite = async(req,res)=>{
     try {
-        
         let { inviteid } =req.params;
-
         let invite =await Groupinvite.findById(inviteid);
-
         if(!invite){
-
             return res.send("invite not found");
         }
-
         if(invite.status!=="pending"){
-
             return res.send("invite already processed");
-
         }
         invite.status="rejected"
-
         await invite.save();
         return res.send("invite rejected")
-
     } catch (error) {
         console.log(error)
         return res.send("Internal error")
     }
 }
 
+// getting group  //
 let getmygroup= async (req,res)=>{
     try {
 
@@ -227,39 +168,31 @@ let getmygroup= async (req,res)=>{
             return res.send("profile not found")
         }
         return res.json(profile.groups);
-    } catch (error) {
+    } 
+    catch (error) {
         console.log(error)
         return res.send("internal error")
     }
 }
 
+// groupchatpreview //
 let groupchatpreview = async(req,res)=>{
-
     try{
-
         let { profileid } = req.params;
-
         let profile =
         await Profile.findById(
             profileid
         );
-
         if(!profile){
-
             return res.send("profile not found");
-
         }
-
         let result =await Message.aggregate([
-
             {
                 $match:{
-
                     group:{
                         $in:
                         profile.groups
                     }
-
                 }
             },
 
@@ -287,15 +220,10 @@ let groupchatpreview = async(req,res)=>{
 
             {
                 $lookup:{
-
                     from:"groups",
-
                     localField:"_id",
-
                     foreignField:"_id",
-
                     as:"group"
-
                 }
             },
 
@@ -305,15 +233,10 @@ let groupchatpreview = async(req,res)=>{
 
             {
                 $project:{
-
                     groupid:"$group._id",
-
                     groupname:"$group.groupname",
-
                     groupimage:"$group.groupimage",
-
                     latestMessage:1,
-
                     latestTime:1
 
                 }
@@ -327,50 +250,32 @@ let groupchatpreview = async(req,res)=>{
 
         ]);
 
-        return res.json(
-            result
-        );
-
+        return res.json(result);
     }
 
     catch(error){
-
         console.log(error);
-
         return res.send("internal error");
-
     }
 
 }
 
+// getting group details //
+
 let getgroupdetails = async(req,res)=>{
-
     try{
-
         let { groupid } = req.params;
-
         let group =await Group.findById(groupid)
-
         .populate("createdby")
-
         .populate("members");
-
         if(!group){
-
             return res.send("group not found");
-
         }
-
         return res.json(group);
-
     }
-
     catch(error){
-
         console.log(error);
-
         return res.send("internal error");
-
     }
 
 }

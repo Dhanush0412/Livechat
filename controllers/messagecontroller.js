@@ -3,6 +3,7 @@ let Group = require("../models/group")
 let Profile=require("../models/profile")
 let socket = require("../socket/socket")
 
+// send message in group //
 let sendmessage = async (req,res)=>{
     try {
         let{text,senderid,groupid}= req.body
@@ -35,7 +36,7 @@ let sendmessage = async (req,res)=>{
     }
 }
 
-
+// getting message in the group //
 let getgroupmessage = async(req,res)=>{
 
     try {
@@ -46,26 +47,17 @@ let getgroupmessage = async(req,res)=>{
             return res.send("group not exist")
         }
         if(!group.members.includes(profileid)){
-      return res.send("access denied");
+            return res.send("access denied");
         }
-
         let messages =await Message.find({group:groupid})
-
         .populate("sender")
-
         .populate("group")
-
         .sort({createdAt:1});
-
         return res.json(messages);
-
     }
     catch(error){
-
         console.log(error);
-
         return res.send("internal error");
-
     }
 
 }

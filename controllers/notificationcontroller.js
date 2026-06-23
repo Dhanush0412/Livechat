@@ -1,5 +1,6 @@
 let Notification = require("../models/notification")
 
+// get notification method //
 let getnotifications = async(req,res)=>{
       try{
         let { profileid } = req.params;
@@ -19,6 +20,7 @@ let getnotifications = async(req,res)=>{
 
 }
 
+// mark the readed message //
 let markasread = async(req,res)=>{
 
     try{

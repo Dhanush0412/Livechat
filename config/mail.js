@@ -1,8 +1,7 @@
-let nodemailer =
-require("nodemailer");
+let nodemailer =require("nodemailer");
+// transporter use to send a email //
 let transporter = nodemailer.createTransport({
     service:"gmail",
-
     auth:{
         user:process.env.EMAIL,
         pass:process.env.APP_PASSWORD
@@ -10,11 +9,11 @@ let transporter = nodemailer.createTransport({
 
 });
 
+// sending  login alert in mail //
+
 let sendloginmail =async(email,username)=>{
 
-   let date =
-   new Date();
-
+   let date =new Date();
    let options = {
       from:process.env.EMAIL,
       to:email,
@@ -53,10 +52,7 @@ let sendloginmail =async(email,username)=>{
       `
    };
 
-   await transporter.sendMail(
-      options
-   );
-
+   await transporter.sendMail(options);
 }
 
 module.exports ={transporter,sendloginmail}

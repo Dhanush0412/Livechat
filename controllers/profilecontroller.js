@@ -86,7 +86,7 @@ let updatedprofilepic = async(req,res)=>{
     return res.send(
         "please upload image"
     );}
-profile.profilepic =req.file.filename;
+    profile.profilepic =req.file.filename;
         await profile.save();
         return res.json({
             message:"profile pic updated successfully",
@@ -124,6 +124,8 @@ let bioupdate = async(req,res)=>{
        return res.send("internal error") 
     }
 }
+
+// profile edit (bio + profile edit) //
 
 let profileedit = async(req,res)=>{
     try {

@@ -176,6 +176,7 @@ let sendotp = async(req,res)=>{
         return res.send("internal error");
     }
 }
+// verify otp //
 
 let verifyotp = async(req,res)=>{
     try {
@@ -205,6 +206,7 @@ let verifyotp = async(req,res)=>{
     }
 }
 
+// search any user //
 let searchuser = async(req,res)=>{
     try {
         let {username} = req.query;
