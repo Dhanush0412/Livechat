@@ -7,7 +7,7 @@ let groupschema = mongoose.Schema({
     },
     groupimage:{
       type:String,
-      default:"default-group.jpg"
+      default:"https://res.cloudinary.com/dubjosis9/image/upload/v1782300064/demoimage_b0q161.jpg"
     },
     createdby:{
         type: mongoose.Schema.Types.ObjectId,

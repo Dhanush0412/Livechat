@@ -26,7 +26,6 @@ let createpost = async(req,res)=>{
     }
 }
 
-
 // post getting to the connected user //
 let getfeed = async(req,res)=>{
     try {

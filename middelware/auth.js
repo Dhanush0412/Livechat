@@ -2,7 +2,6 @@ let jwt= require("jsonwebtoken")
 let Profile = require("../models/profile")
 let verify = async(req,res,next)=>{
     try {
-        
         let token= req.headers.authorization.split(" ")[1];
         if(!token){
             return res.send("token required")

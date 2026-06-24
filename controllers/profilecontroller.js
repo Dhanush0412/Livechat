@@ -2,6 +2,7 @@
 let Profile = require("../models/profile")
 let User = require("../models/user")
 let Post = require("../models/post")
+let Defaultpic = "https://res.cloudinary.com/dubjosis9/image/upload/v1782300064/demoimage_b0q161.jpg"
 
 // creating profile //
 let createprofile = async(req,res)=>{
@@ -17,23 +18,18 @@ let createprofile = async(req,res)=>{
         return res.status(401).send("profile already existing")
     }
    let profile = new Profile({
-
     bio:bio,
-
     user:userid,
-
     profilepic:
     req.file
     ?
-    req.file.filename:"default-profile.jpg"
+    req.file.path:Defaultpic
 
 })
     await profile.save()
     return res.json({
-
     message:"profile created",
     profileid:profile._id
-
    });
    }
    catch(error){
@@ -42,11 +38,10 @@ let createprofile = async(req,res)=>{
    }
 }
 
-
 // Getting dashboard //
 let getdashboard = async(req,res)=>{
    try {
-       let profileid = req.profileid;
+    let profileid = req.profileid;
     let profile = await Profile.findById(profileid)
 
     .populate("user")
@@ -70,8 +65,6 @@ let getdashboard = async(req,res)=>{
    }
 }
 
-
-
 // profile pic updation //
 
 let updatedprofilepic = async(req,res)=>{
@@ -82,11 +75,9 @@ let updatedprofilepic = async(req,res)=>{
             return res.send("profile not exist")
         }
         if(!req.file){
-
-    return res.send(
-        "please upload image"
-    );}
-    profile.profilepic =req.file.filename;
+    return res.send("please upload image");
+  }
+    profile.profilepic =req.file.path;
         await profile.save();
         return res.json({
             message:"profile pic updated successfully",
@@ -129,8 +120,7 @@ let bioupdate = async(req,res)=>{
 let profileedit = async(req,res)=>{
     try {
         let profileid = req.profileid
-        let {bio} = req.body
-        
+        let {bio} = req.body        
         let profile = await Profile.findById(profileid)
         if(!profile){
             return res.send("profile not found")
@@ -139,7 +129,7 @@ let profileedit = async(req,res)=>{
             profile.bio=bio
         }
         if(req.file){
-            profile.profilepic=req.file.filename;
+            profile.profilepic=req.file.path;
         }
         await profile.save();
         return res.json({

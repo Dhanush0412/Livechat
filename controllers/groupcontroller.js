@@ -86,7 +86,6 @@ let sendgroupinvite =async(req,res)=>{
     }
 
 }
-  
 // get the pending request //
    let getpendinginvites =async(req,res)=>{
     try{
@@ -109,7 +108,7 @@ let sendgroupinvite =async(req,res)=>{
  // accept the group invites //
  let acceptinvite =async(req,res)=>{
     try{
-        let  {inviteid } =req.params;
+        let  {inviteid} =req.params;
         let invite =await Groupinvite.findById(inviteid);
         if(!invite){
             return res.send("invite not found");
