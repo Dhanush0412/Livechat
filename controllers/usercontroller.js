@@ -277,7 +277,11 @@ let searchuser = async(req,res)=>{
         let {username} = req.query;
         let profile = await Profile.find()
         .populate("user");
+        if(!username){
+       return res.status(400).send("Username is required");
+       }
         let result = profile.filter(profile=>
+        profile.user &&
         profile.user.username
         .toLowerCase().includes(username.toLowerCase())
         );

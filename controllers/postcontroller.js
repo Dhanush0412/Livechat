@@ -115,7 +115,7 @@ let unlike = async(req,res)=>{
             return res.send("post not found")
         }
         post.likes = post.likes.filter(
-            like=> like.toString() !== profileid
+            like=> like.toString() !== profileid.toString()
         )
         await post.save();
         return res.json({
@@ -209,6 +209,7 @@ let deletecomment = async(req,res)=>{
         if(!comment){
            return res.send("comment not found") 
         }
+        let post = await Post.findById(comment.post);
         if(String(post.profile) !== String(profileid) && String(comment.profile) !== String(profileid)){
             return res.send("unauthorized")
         }
