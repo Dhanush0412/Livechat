@@ -6,7 +6,16 @@ let socket = require("../socket/socket")
 let senddirectmessage = async(req,res)=>{
    try {
        let senderid = req.profileid
-       let {text,receiverid} = req.body
+       let {receiverid} = req.params
+       let {text} = req.body
+       let sender = await Profile.findById(senderid);
+       let receiver = await Profile.findById(receiverid);
+
+     if (sender.blockedusers.includes(receiverid) ||
+         receiver.blockedusers.includes(senderid))
+     {
+    return res.send("You cannot message this user.");
+     }
     let message= new Directmessage({
         text:text,
         sender:senderid,

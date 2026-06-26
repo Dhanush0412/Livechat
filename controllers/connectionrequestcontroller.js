@@ -13,8 +13,15 @@ let sendrequest = async (req,res)=>{
             return res.send("cannot send request to yourself")
         }
 
-        let requestexist = await Connectionrequest.findOne({
+         let senderProfile = await Profile.findById(senderid);
+         let receiverProfile = await Profile.findById(receiverid);
 
+          if (senderProfile.blockedusers.includes(receiverid) ||receiverProfile.blockedusers.includes(senderid)) 
+            {
+              return res.send("You cannot send a connection request.");
+             }
+
+        let requestexist = await Connectionrequest.findOne({
     $or:[
         {
             sender:senderid,
@@ -153,10 +160,9 @@ let acceptrequest = async(req,res)=>{
         if(!targetprofile){
             return res.send("Profile not found")
         }
-        if(myprofile.blockedusers.include(blockprofileid)){
+        if(myprofile.blockedusers.includes(blockprofileid)){
             return res.send("user already blocked")
         }
-       
         myprofile.connections = myprofile.connections.filter(
             id=>String(id) !== String(blockprofileid)
         )
@@ -177,7 +183,7 @@ let acceptrequest = async(req,res)=>{
                 }
             ]
          })
-          myprofile.blockedusers.push(profileid);
+          myprofile.blockedusers.push(blockprofileid);
         await myprofile.save();
         await targetprofile.save();
         return res.send("User blocked");
@@ -187,4 +193,47 @@ let acceptrequest = async(req,res)=>{
     }
  }
 
- module.exports={sendrequest,pendingrequest,acceptrequest,rejectrequest,getconnections}
+
+// unblock user //
+
+let unblockuser = async(req,res)=>{
+    try{
+        let myprofileid=req.profileid;
+        let {unblockprofileid}=req.params;
+        let myprofile=await Profile.findById(myprofileid);
+        myprofile.blockedusers=
+        myprofile.blockedusers.filter(
+            id=>String(id)!==String(unblockprofileid)
+        );
+        await myprofile.save();
+        return res.send("User unblocked");
+    }
+    catch(error){
+        console.log(error);
+        return res.send("internal error");
+    }
+
+}
+
+// getting blocked user // 
+
+let blockedusers = async(req,res)=>{
+
+    try{
+        let profile = await Profile.findById(req.profileid)
+        .populate({
+            path:"blockedusers",
+            populate:{
+                path:"user"
+            }
+        });
+        return res.json(profile.blockedusers);
+    }
+    catch(error){
+        console.log(error);
+        return res.send("internal error");
+    }
+
+}
+
+ module.exports={sendrequest,pendingrequest,acceptrequest,rejectrequest,getconnections,blockuser,unblockuser,blockedusers}

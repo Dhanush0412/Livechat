@@ -45,6 +45,14 @@ let sendgroupinvite =async(req,res)=>{
         if(senderid === receiverid){
             return res.send("cannot invite yourself");
          }
+        
+         let inviter = await Profile.findById(senderid);
+         let invited = await Profile.findById(receiverid);
+          if (inviter.blockedusers.includes(receiverid) ||
+              invited.blockedusers.includes(senderid))
+             {
+              return res.send("Cannot invite this user.");
+             }
 
         if(group.createdby.toString()!==senderid){
            return res.send("only admin can invite");
