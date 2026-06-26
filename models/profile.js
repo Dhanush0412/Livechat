@@ -20,6 +20,10 @@ let ProfileSchema = mongoose.Schema({
     connections:[{
         type:mongoose.Schema.Types.ObjectId,
         ref:"Profile"
+    }],
+    blockedusers:[{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"Profile"
     }]
 })
 let Profile = mongoose.model(

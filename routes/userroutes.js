@@ -1,7 +1,7 @@
 let express = require("express")
 let router = express.Router();
 let verifytoken = require("../middelware/auth")
-let {signup,login, forgotpassword,sendotp,verifyotp, searchuser,sendforgototp} = require("../controllers/usercontroller")
+let {signup,login, forgotpassword,sendotp,verifyotp, searchuser,sendforgototp,verifyforgototp} = require("../controllers/usercontroller")
 
 router.post("/signup",signup)
 router.post("/login",login)
@@ -9,5 +9,6 @@ router.put("/forgot",forgotpassword)
 router.post("/sentotp",sendotp)
 router.post("/verifyotp",verifyotp)
 router.post("/sendforgototp",sendforgototp)
+router.post("/verifyforgototp",verifyforgototp)
 router.get("/search",searchuser)
 module.exports=router;

@@ -12,9 +12,7 @@ let getnotifications = async(req,res)=>{
         return res.json(notifications);
     }
     catch(error){
-
         console.log(error);
-
         return res.send("internal error");
     }
 

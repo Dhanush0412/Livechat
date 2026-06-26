@@ -141,4 +141,50 @@ let acceptrequest = async(req,res)=>{
     }
  }
 
+ let blockuser = async(req,res)=>{
+    try {
+        let myprofileid = req.profileid
+        let {blockprofileid} = req.params
+        if(String(myprofileid)===String(blockprofileid)){
+            return res.send("You can't block yourself")
+        }
+        let myprofile = await Profile.findById(myprofileid)
+        let targetprofile = await Profile.findById(blockprofileid)
+        if(!targetprofile){
+            return res.send("Profile not found")
+        }
+        if(myprofile.blockedusers.include(blockprofileid)){
+            return res.send("user already blocked")
+        }
+       
+        myprofile.connections = myprofile.connections.filter(
+            id=>String(id) !== String(blockprofileid)
+        )
+
+        targetprofile.connections = targetprofile.connections.filter(
+            id=>String(id) !== String(myprofileid)
+        )
+
+         await Connectionrequest.deleteMany({
+            $or:[
+                {
+                    sender:myprofileid,
+                    receiver:blockprofileid
+                },
+                {
+                    sender:blockprofileid,
+                    receiver:myprofileid
+                }
+            ]
+         })
+          myprofile.blockedusers.push(profileid);
+        await myprofile.save();
+        await targetprofile.save();
+        return res.send("User blocked");
+    } catch (error) {
+        console.log(error)
+        return res.send("internal server error")
+    }
+ }
+
  module.exports={sendrequest,pendingrequest,acceptrequest,rejectrequest,getconnections}

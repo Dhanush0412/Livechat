@@ -153,13 +153,28 @@ let forgotpassword = async (req,res)=>{
     return res.send("verify otp first");
     }
 
-        let hashedpassword = await bcrypt.hash(
+       /* let hashedpassword = await bcrypt.hash(
             newpassword,
             10
         )
         userexist.password=hashedpassword
         await userexist.save();
-        return res.send("password updated successfully");
+        return res.send("password updated successfully");*/
+        let hashedpassword = await bcrypt.hash(newpassword, 10);
+
+console.log("Before Update:", userexist.password);
+
+userexist.password = hashedpassword;
+
+await userexist.save();
+
+let updatedUser = await User.findById(userexist._id);
+
+console.log("After Update:", updatedUser.password);
+await Otp.deleteMany({
+    email: userexist.email
+});
+return res.send("password updated successfully");
     } catch (error) {
        return res.send("internal error")   
     }
@@ -202,32 +217,40 @@ let sendotp = async(req,res)=>{
 
 let verifyotp = async(req,res)=>{
     try {
-        let {email,otp} = req.body
-        let otpdata = await Otp.findOne({
-            email:email
-        })
-        .sort({
-            createdAt:-1
-        })
-        if(!otpdata){
-            return res.send("otp not found")
-        }
-        if(otpdata.expiresAt<new Date()){
-            return res.send("OTP is expired")
-        }
-        if(String(otpdata.otp) !== String(otp)){
-            return res.send("invalid otp")
-        }
-        otpdata.verified=true;
-        await otpdata.save();
-        return res.send("email verified");
 
-    } catch (error) {
-        console.log(error)
-        return res.send("internal error")
+        let {email, otp} = req.body;
+
+        let otpdata = await Otp.findOne({
+            email: email
+        }).sort({
+            createdAt: -1
+        });
+
+        if(!otpdata){
+            return res.send("OTP not found");
+        }
+
+        if(otpdata.expiresAt < new Date()){
+            return res.send("OTP expired");
+        }
+
+        if(String(otpdata.otp) !== String(otp)){
+            return res.send("Invalid OTP");
+        }
+
+        otpdata.verified = true;
+        await otpdata.save();
+
+        return res.send("Email verified");
+
+    } catch(error){
+
+        console.log(error);
+
+        return res.send("Internal error");
+
     }
 }
-
 // send forgototp//
 let sendforgototp = async(req,res)=>{
     try {
@@ -271,6 +294,64 @@ let sendforgototp = async(req,res)=>{
         return res.send("internal error")
     }
 }
+let verifyforgototp = async(req,res)=>{
+
+    try{
+
+        let {login,otp}=req.body;
+
+        let user = await User.findOne({
+
+            $or:[
+                {email:login},
+                {phone:login}
+            ]
+
+        });
+
+        if(!user){
+            return res.send("User not found");
+        }
+
+        let otpdata = await Otp.findOne({
+
+            email:user.email,
+            verified:false
+
+        }).sort({
+
+            createdAt:-1
+
+        });
+
+        if(!otpdata){
+            return res.send("OTP not found");
+        }
+
+        if(otpdata.expiresAt < new Date()){
+            return res.send("OTP expired");
+        }
+
+        if(String(otpdata.otp)!==String(otp)){
+            return res.send("Invalid OTP");
+        }
+        otpdata.verified=true;
+
+        await otpdata.save();
+
+        return res.send("OTP verified");
+
+    }
+
+    catch(error){
+
+        console.log(error);
+
+        return res.send("Internal error");
+
+    }
+
+}
 // search any user //
 let searchuser = async(req,res)=>{
     try {
@@ -294,4 +375,4 @@ let searchuser = async(req,res)=>{
 }
 
 
-module.exports = {signup,login,forgotpassword,sendotp,verifyotp,searchuser,sendforgototp};
+module.exports = {signup,login,forgotpassword,sendotp,verifyotp,searchuser,sendforgototp,verifyforgototp};

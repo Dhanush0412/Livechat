@@ -20,10 +20,7 @@ let getchatlist = async(req,res)=>{
     username:connection.user.username,
     profilepic:connection.profilepic
      })
-     )
-
-    )
-        
+     )) 
     } catch (error) {
         console.log(error)
         return res.send("internal error")

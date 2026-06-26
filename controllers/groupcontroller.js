@@ -253,10 +253,8 @@ let groupchatpreview = async(req,res)=>{
             }
 
         ]);
-
         return res.json(result);
     }
-
     catch(error){
         console.log(error);
         return res.send("internal error");
