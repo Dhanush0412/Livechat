@@ -47,20 +47,13 @@ let sendgroupinvite =async(req,res)=>{
         if(String(senderid) === String(receiverid)){
             return res.status(400).send("cannot invite yourself");
          }
-         console.log(senderid)
-         console.log(receiverid)
          let inviter = await Profile.findById(senderid);
          let invited = await Profile.findById(receiverid);
-         console.log(inviter)
-         console.log(invited)
           if (inviter.blockedusers.includes(receiverid) ||
               invited.blockedusers.includes(senderid))
              {
               return res.status(403).send("Cannot invite this user.");
              }
-             console.log(group.createdby.toString());
-             console.log(String(senderid))
-
         if(group.createdby.toString()!== String(senderid)){
            return res.status(401).send("only admin can invite");
          }
@@ -132,9 +125,6 @@ let sendgroupinvite =async(req,res)=>{
         if(invite.status!=="pending"){
             return res.status(429).send("invite already processed");
         }
-        
-         console.log("JWT Profile ID :", String(req.profileid));
-         console.log("Invite Receiver:", String(invite.receiver));
           if(String(invite.receiver)!== String(req.profileid)){
            return res.status(401).send("unauthorized");
          }
