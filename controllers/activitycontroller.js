@@ -29,5 +29,36 @@ let updatedactivity = async(req,res)=>{
         return res.status(500).send("internal error")
     }
 }
+let getactivity = async(req,res)=>{
+    try{
 
-module.exports=updatedactivity
+        let profileid = req.profileid;
+
+        let today = new Date().toISOString().split("T")[0];
+
+        let activity = await Activity.findOne({
+            profile:profileid,
+            date:today
+        });
+
+        if(!activity){
+
+            return res.json({
+                totalSeconds:0
+            });
+
+        }
+
+        return res.json(activity);
+
+    }
+    catch(error){
+
+        console.log(error);
+
+        return res.status(500).send("Internal Error");
+
+    }
+}
+
+module.exports={updatedactivity,getactivity}
